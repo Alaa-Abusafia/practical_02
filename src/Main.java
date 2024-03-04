@@ -1,14 +1,16 @@
-public class Main {
-    // Static list of users, acting as a database
-    private static ArrayList<User> users = new ArrayList<>();
+import java.util.ArrayList;
+import java.util.Scanner;
 
-    // Mock authentication service that always returns the first user when log in, and does nothing when sign up
-    private static IAuthenticationService authService = new IAuthenticationService() {
+import authentication.*;
+import todolist.*;
+
+public class Main {
+    private static final ArrayList<User> users = new ArrayList<>();
+     private static IAuthenticationService authService = new IAuthenticationService() {
         @Override
         public User signUp(String username, String password) {
             return null;
         }
-
         @Override
         public User logIn(String username, String password) {
             return users.get(0);
@@ -16,12 +18,9 @@ public class Main {
     };
     private static boolean isRunning = true;
 
-    /**
-     * The entry point of the application.
-     * @param args The command-line arguments.
-     */
+
     public static void main(String[] args) {
-        users.add(new User("test", "test"));
+        users.add(new User("test", "test")); // Add an empty list for ToDoItems
         while (isRunning) {
             showMenu();
         }
@@ -44,6 +43,7 @@ public class Main {
 
     /**
      * Handles the user's choice, mapping the menu options to the corresponding methods.
+     *
      * @param choice The user's choice.
      */
     public static void handleMenu(int choice) {
@@ -64,6 +64,28 @@ public class Main {
     }
 
     /**
+     * Handles the sign-up process.
+     */
+    public static void onSignUp() {
+        System.out.print("Enter your username: ");
+        Scanner scanner = new Scanner(System.in);
+        String username = scanner.nextLine();
+        System.out.print("Enter your password: ");
+        String password = scanner.nextLine();
+
+        User user = authService.signUp(username, password);
+
+        // TODO Now: Show a message based on the result of the signUp method:
+        if (user != null) {
+            System.out.println("User " + user.getUsername() + "has been created successfully!");
+            // - If the user is not null, show "User <username> has been created successfully!"
+        } else {
+            System.out.println("Sign-up failed. The username is already taken!");
+            // - If the user is null, show "The username is already taken!"
+        }
+    }
+
+    /**
      * Handles the log-in process, and the post-login operations.
      */
     public static void onLogIn() {
@@ -74,21 +96,11 @@ public class Main {
         String password = scanner.nextLine();
         User user = authService.logIn(username, password);
         System.out.println("Welcome, " + user.getUsername() + "!");
-        // TODO Later: Add the to-do list operations
+        // TODO Now: Create an instance of the ToDoList class with the logged-in user and call the run method
+        ToDoList toDoList = new ToDoList(user);
+        toDoList.run();
     }
 
-    /**
-     * Handles the sign-up process.
-     */
-    public static void onSignUp() {
-        System.out.print("Enter your username: ");
-        Scanner scanner = new Scanner(System.in);
-        String username = scanner.nextLine();
-        System.out.print("Enter your password: ");
-        String password = scanner.nextLine();
-        User user = authService.signUp(username, password);
-        // TODO Later: Shows a message based on the result
-    }
 
     /**
      * Exits the application by setting the `isRunning` flag to false.
@@ -96,49 +108,6 @@ public class Main {
     public static void onExit() {
         isRunning = false;
     }
-}
-User class: A class to represent a user, with fields for username and password along with getters and setters.
 
 
-
-
-User.java
-public class User {
-    private String username;
-    private String password;
-
-    public User(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
-
-    /**
-     * Gets the username of the user.
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * Gets the password of the user.
-     */
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * Sets the username of the user.
-     * @param username The username to set.
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    /**
-     * Sets the password of the user.
-     * @param password The password to set.
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }
